@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom"
-import React from "react"
+import React, { useEffect } from "react"
 import AuthLayout from "./components/auth/layout"
 import Login from "./pages/auth/login"
 import Register from "./pages/auth/register"
@@ -16,12 +16,22 @@ import ShoppingListing from "./pages/shopping-view/listing"
 import CheckAuth from "./components/common/checkAuth"
 import UnauthPage from "./pages/unauth-page"
 import NotFoundPage from "./pages/notfound-page"
+import { useDispatch, useSelector } from "react-redux"
+import { checkAuthMiddleware } from "./store/auth-slice"
 
 function App() {
 
-  //Dummy Data
-  const isAuthenticated = false;
-  const user = null;
+  const {isAuthenticated,user, isLoading} = useSelector(state=>state.auth);
+
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(checkAuthMiddleware())
+  },[dispatch])
+
+  if(isLoading){
+    return <div>Loading....</div>
+  }
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">

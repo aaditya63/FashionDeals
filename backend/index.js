@@ -3,12 +3,15 @@ const dotenv = require('dotenv')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const connectDB = require('./config/db')
+const authRouter = require('./routes/auth/auth')
 
 
 
 const PORT = process.env.PORT || 5000;
 const app = express()
+
 dotenv.config()
+connectDB();
 
 app.use(cookieParser())
 app.use(express.json())
@@ -29,7 +32,8 @@ app.use(
 
 
 
-connectDB();
+app.use('/api/auth',authRouter)
+
 
 app.listen(PORT,()=>{
     console.log("Server Started")

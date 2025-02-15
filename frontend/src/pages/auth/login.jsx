@@ -2,6 +2,9 @@ import { loginFormControls } from '@/config';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import CommonForm from '@/components/common/form';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '@/store/auth-slice';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Login() {
 
@@ -10,9 +13,24 @@ export default function Login() {
     password: "",
   };
 
+    const {toast} = useToast()
+
+    const dispatch = useDispatch()
     const [formData, setFormData] = useState(initialState);
-    function onSubmit(){
-      
+    function onSubmit(e){
+      e.preventDefault();
+      dispatch(loginUser(formData)).then((data)=>{
+        if(data?.payload?.success){
+          toast({
+            title: data?.payload?.message
+          })
+        }
+        else{
+          toast({
+            title: data?.payload?.message
+          })
+        }
+      })
     }
 
   return (
