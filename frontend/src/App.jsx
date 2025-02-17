@@ -18,6 +18,8 @@ import UnauthPage from "./pages/unauth-page"
 import NotFoundPage from "./pages/notfound-page"
 import { useDispatch, useSelector } from "react-redux"
 import { checkAuthMiddleware } from "./store/auth-slice"
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 function App() {
 
@@ -30,7 +32,7 @@ function App() {
   },[dispatch])
 
   if(isLoading){
-    return <div>Loading....</div>
+    return <Skeleton className="w-[100px] h-[20px] bg-black rounded-full" />
   }
 
   return (
