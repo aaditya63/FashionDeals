@@ -7,7 +7,7 @@ import AdminLayout from "./components/admin-view/layout"
 import AdminDashboard from "./pages/admin-view/dashboard"
 import AdminFeatures from "./pages/admin-view/features"
 import AdminOrders from "./pages/admin-view/orders"
-import AdminProducs from "./pages/admin-view/products"
+import AdminProducts from "./pages/admin-view/products"
 import ShoppingLayout from "./components/shopping-view/layout"
 import ShoppingAccount from "./pages/shopping-view/account"
 import ShoppingCheckout from "./pages/shopping-view/checkout"
@@ -57,7 +57,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="features" element={<AdminFeatures />} />
           <Route path="orders" element={<AdminOrders />} />
-          <Route path="products" element={<AdminProducs />} />
+          <Route path="products" element={<AdminProducts />} />
         </Route>
 
 
