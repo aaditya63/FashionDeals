@@ -23,16 +23,24 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 function App() {
 
-  const {isAuthenticated,user, isLoading} = useSelector(state=>state.auth);
+  const { isAuthenticated, user, isLoading } = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(checkAuthMiddleware())
-  },[dispatch])
+  }, [dispatch])
 
-  if(isLoading){
-    return <Skeleton className="w-[100px] h-[20px] bg-black rounded-full" />
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-3 justify-center items-center">
+        <Skeleton className="h-[300px] w-[550px] rounded-xl mt-28" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -72,8 +80,8 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
         </Route>
 
-        <Route path="/unauth" element={<UnauthPage/>}/>
-        <Route path="*" element={<NotFoundPage/>}/>
+        <Route path="/unauth" element={<UnauthPage />} />
+        <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
     </div>

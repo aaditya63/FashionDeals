@@ -34,7 +34,6 @@ function MenuItems({setOpen}) {
       onClick={() => { 
         navigate(menuItem.path);
         setOpen ? setOpen(false) : null;
-        console.log("here");
         
        }} 
        className='flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-muted-foreground hover:bg-muted hover:text-foreground text-xl'>

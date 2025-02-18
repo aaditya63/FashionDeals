@@ -7,10 +7,6 @@ export default function AdminLayout() {
 
   const [openSidebar,setOpenSidebar] = useState(false)
   
-  useEffect(()=>{
-    console.log("changed to ",openSidebar);
-  },[openSidebar])
-
 
 
   return (
@@ -20,7 +16,7 @@ export default function AdminLayout() {
         <div className='flex flex-1 flex-col'>
             <AdminHeader  setOpen={setOpenSidebar}/>
 
-            <main className='flex flex-1 bg-muted/40 p-4 md:p-6'>
+            <main className='flex flex-1 flex-col bg-muted/40 p-4 md:p-6'>
                 <Outlet/>
             </main>
 
