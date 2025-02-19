@@ -83,6 +83,7 @@ export default function ShoppingHeader() {
           </SheetTrigger>
           <SheetContent side="left" className='w-full max-w-xs'>
             <MenuItems />
+            <HeaderRightContent/>
           </SheetContent>
         </Sheet>
 
