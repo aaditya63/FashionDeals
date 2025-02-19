@@ -62,7 +62,8 @@ exports.login = async (req,res)=>{
         const token = jwt.sign({
             id:checkUser._id,
             role:checkUser.role,
-            email : checkUser.email
+            email : checkUser.email,
+            userName : checkUser.userName
         },process.env.JWT_KEY,{
             expiresIn:'60m'
         })
@@ -77,7 +78,8 @@ exports.login = async (req,res)=>{
             user : {
                 email : checkUser.email,
                 role : checkUser.role,
-                id : checkUser._id
+                id : checkUser._id,
+                userName : checkUser.userName
             }
         })
 
