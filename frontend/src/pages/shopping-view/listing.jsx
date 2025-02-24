@@ -1,17 +1,85 @@
 import ProductFilter from '@/components/shopping-view/filter'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { sortOptions } from '@/config'
+import { fetchAllFilteredProducts } from '@/store/shop/products-slice'
 import { ArrowUpDown } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import ShoppingProductTile from './product-tile'
+import { useSearchParams } from 'react-router-dom'
+import { URLSearchParams } from 'url'
+
+
+function createSearchParamsHelper(filterParams){
+  const quaryParams = []
+  for(const [key,value] of Object.entries(filterParams)){
+    if(Array.isArray(value) && value.length >0){
+      const paramValue = value.join(',')
+      quaryParams.push(`${key}=${encodeURIComponent(paramValue)}`)
+    }
+  }
+  return quaryParams.join('&')
+}
+
 
 export default function ShoppingListing() {
-  return <div className='grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6'>
-    <ProductFilter/>
+
+  const dispatch = useDispatch()
+  const {productList} = useSelector(state=>state.shopProducts)
+  const [filters,setFilters] = useState({})
+  const [sort,setSort] = useState(null)
+  const [searchParams,setSearchParams] = useSearchParams()
+
+
+  function handleSort(value){
+    setSort(value);
+  }
+
+  function handleFilter(getSectionId,getCurrentOption){
+    let cpyFilters = {...filters};
+    const indexOfCurrentSectino = Object.keys(cpyFilters).indexOf(getSectionId);
+
+    if(indexOfCurrentSectino === -1){
+      cpyFilters = {
+        ...cpyFilters,
+        [getSectionId]:[getCurrentOption]
+      }
+    }else{
+      const indexOfCurrentOption = cpyFilters[getSectionId].indexOf(getCurrentOption);
+      if(indexOfCurrentOption === -1){
+        cpyFilters[getSectionId].push(getCurrentOption)
+      }
+      else cpyFilters[getSectionId].splice(indexOfCurrentOption,1)
+    }
+    setFilters(cpyFilters)
+    sessionStorage.setItem('filters',JSON.stringify(cpyFilters))
+  }
+
+  useEffect(()=>{
+    setSort("price-lowtohigh")
+    setFilters(JSON.parse(sessionStorage.getItem('filters')))
+  },[])
+
+  useEffect(()=>{
+    if(filters && Object.keys(filters).length > 0){
+      const createQuaryString = createSearchParamsHelper(filters);
+      setSearchParams(new URLSearchParams(createQuaryString));   
+    }
+  },[filters])
+
+  useEffect(()=>{
+    dispatch(fetchAllFilteredProducts())
+  },[])
+
+
+  return <div className='grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 p-4 md:p-6'>
+    <ProductFilter filters={filters} handleFilter={handleFilter}/>
     <div className='bg-background w-full rounded-lg shadow-sm'>
-      <div className='p-4 border-b flex items-center gap-3 justify-between'>
+      <div className='p-4 border-b flex items-center justify-between'>
         <h2 className='text-lg font-extrabold'>All Products</h2>
-        <div className='flex items-center gap-2'>
-          <span className='text-muted-foreground mr-2'>10 Products</span>
+        <div className='flex items-center gap-3'>
+          <span className='text-muted-foreground mr-2'>{productList.length} Products</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
               <Button variant='outline' size='sm' className='flex items-center gap-1'>
@@ -19,10 +87,27 @@ export default function ShoppingListing() {
                 <span>Sort by</span>
               </Button>
           </DropdownMenuTrigger>
+          <DropdownMenuContent align='end' className='w-[200px]'>
+              <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
+                {
+                  sortOptions.map(sortItem => <DropdownMenuRadioItem value={sortItem.id} key={sortItem.id}>
+                    {
+                      sortItem?.label
+                    }
+                  </DropdownMenuRadioItem>)
+                }
+              </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
         </DropdownMenu>
         </div>
       </div>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4'>
 
+        {
+          productList && productList.length > 0 ?
+          productList.map(productItem=> <ShoppingProductTile product={productItem}/>) : null
+        }          
+      </div>
     </div>
   </div>
 }
