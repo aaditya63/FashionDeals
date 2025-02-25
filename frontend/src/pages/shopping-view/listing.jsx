@@ -2,13 +2,12 @@ import ProductFilter from '@/components/shopping-view/filter'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { sortOptions } from '@/config'
-import { fetchAllFilteredProducts } from '@/store/shop/products-slice'
+import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/products-slice'
 import { ArrowUpDown } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ShoppingProductTile from './product-tile'
 import { useSearchParams } from 'react-router-dom'
-import { URLSearchParams } from 'url'
 
 
 function createSearchParamsHelper(filterParams){
@@ -26,7 +25,7 @@ function createSearchParamsHelper(filterParams){
 export default function ShoppingListing() {
 
   const dispatch = useDispatch()
-  const {productList} = useSelector(state=>state.shopProducts)
+  const {productList,productDetails} = useSelector(state=>state.shopProducts)
   const [filters,setFilters] = useState({})
   const [sort,setSort] = useState(null)
   const [searchParams,setSearchParams] = useSearchParams()
@@ -56,6 +55,12 @@ export default function ShoppingListing() {
     sessionStorage.setItem('filters',JSON.stringify(cpyFilters))
   }
 
+
+  function handleGetProdcutDetails(getCurrentProductId){
+    dispatch(fetchProductDetails(getCurrentProductId))
+
+  }
+
   useEffect(()=>{
     setSort("price-lowtohigh")
     setFilters(JSON.parse(sessionStorage.getItem('filters')))
@@ -69,8 +74,11 @@ export default function ShoppingListing() {
   },[filters])
 
   useEffect(()=>{
-    dispatch(fetchAllFilteredProducts())
-  },[])
+    if(filters !== null && sort !== null)
+      dispatch(fetchAllFilteredProducts({filterParams:filters,sortParams:sort}))
+  },[dispatch,sort,filters])
+
+    console.log(productDetails)
 
 
   return <div className='grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 p-4 md:p-6'>
@@ -105,7 +113,7 @@ export default function ShoppingListing() {
 
         {
           productList && productList.length > 0 ?
-          productList.map(productItem=> <ShoppingProductTile product={productItem}/>) : null
+          productList.map(productItem=> <ShoppingProductTile handleGetProdcutDetails={handleGetProdcutDetails} product={productItem}/>) : null
         }          
       </div>
     </div>

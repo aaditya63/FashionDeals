@@ -5,6 +5,7 @@ const cors = require('cors')
 const connectDB = require('./config/db')
 const authRouter = require('./routes/auth/auth')
 const adminProductsRouter = require('./routes/admin/products-routes')
+const shopProductsRouter = require('./routes/shop/products-routes')
 
 dotenv.config()
 
@@ -35,6 +36,7 @@ app.use(
 
 app.use('/api/auth',authRouter)
 app.use('/api/admin/products',adminProductsRouter)
+app.use('/api/shop/products',shopProductsRouter)
 
 app.listen(PORT,()=>{
     console.log("Server Started")

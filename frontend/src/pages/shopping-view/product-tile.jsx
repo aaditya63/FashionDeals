@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import { brandOptionsMap, categoryOptionsMap } from '@/config'
 
-export default function ShoppingProductTile({product}) {
+export default function ShoppingProductTile({product,handleGetProdcutDetails}) {
   return (
     <Card className='w-full max-w-sm mx-auto'>
-        <div>
+        <div onClick={()=>handleGetProdcutDetails(product?._id)}>
             <div className='relative'>
                 <img src={product?.image} alt={product?.title} className='w-full h-[250px] object-cover rounded-t-lg'/>
                 {
