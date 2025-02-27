@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ShoppingProductTile from './product-tile'
 import { useSearchParams } from 'react-router-dom'
+import ProductDetailsDialog from '@/components/shopping-view/product-details'
 
 
 function createSearchParamsHelper(filterParams){
@@ -29,6 +30,7 @@ export default function ShoppingListing() {
   const [filters,setFilters] = useState({})
   const [sort,setSort] = useState(null)
   const [searchParams,setSearchParams] = useSearchParams()
+  const [openDetailsDialog,setOpenDetailsDialog] = useState(false)
 
 
   function handleSort(value){
@@ -58,7 +60,7 @@ export default function ShoppingListing() {
 
   function handleGetProdcutDetails(getCurrentProductId){
     dispatch(fetchProductDetails(getCurrentProductId))
-
+            ///////
   }
 
   useEffect(()=>{
@@ -78,7 +80,11 @@ export default function ShoppingListing() {
       dispatch(fetchAllFilteredProducts({filterParams:filters,sortParams:sort}))
   },[dispatch,sort,filters])
 
-    console.log(productDetails)
+  useEffect(()=>{
+    if(productDetails !== null){
+      setOpenDetailsDialog(true)
+    }
+  },[productDetails])
 
 
   return <div className='grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 p-4 md:p-6'>
@@ -117,5 +123,6 @@ export default function ShoppingListing() {
         }          
       </div>
     </div>
+    <ProductDetailsDialog open={openDetailsDialog} setOpen={setOpenDetailsDialog} productDetails={productDetails}/>
   </div>
 }
