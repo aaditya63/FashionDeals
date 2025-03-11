@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { House, LogOut, Menu, ShoppingCart, UserRoundCog } from 'lucide-react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
@@ -9,12 +9,28 @@ import { DropdownMenuTrigger, DropdownMenu } from '@radix-ui/react-dropdown-menu
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '../ui/dropdown-menu'
 import { logoutUser } from '@/store/auth-slice'
+import UserCartWrapper from './cart-wrapper'
+import { fetchCartItems } from '@/store/shop/cart-slice'
+import { Label } from '../ui/label'
 
 
 function MenuItems() {
+  const navigate = useNavigate()
+  function handleNavigate(getCurrentMenuItem){
+    sessionStorage.removeItem('filters')
+    
+    const currentFilter = getCurrentMenuItem.id !== 'home' ? 
+    {
+      category : [getCurrentMenuItem.id]
+    } : null
+
+    sessionStorage.setItem('filters',JSON.stringify(currentFilter))
+    navigate(getCurrentMenuItem.path)
+  }
   return <nav className='flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row'>
     {
-      shoppingViewHeaderMenuItems.map(MenuItem => <Link className='text-sm font-medium' key={MenuItem.id} to={MenuItem.path} >{MenuItem.label}</Link>)
+      shoppingViewHeaderMenuItems.map(MenuItem => <Label onClick={()=>handleNavigate(MenuItem)} className='text-sm font-medium cursor-pointer' key={MenuItem.id}  >{MenuItem.label}
+      </Label>)
     }
 
   </nav>
@@ -24,6 +40,8 @@ function MenuItems() {
 function HeaderRightContent() {
 
   const { isAuthenticated, user } = useSelector(state => state.auth)
+  const {cartItems} = useSelector((state)=>state.shopCart)
+  const [openCartSheet,setOpenCartSheet] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -31,11 +49,18 @@ function HeaderRightContent() {
     dispatch(logoutUser())
   }
 
+  useEffect(()=>{
+    dispatch(fetchCartItems(user?.id))
+  },[dispatch])
+
   return <div className='flex lg:items-center lg:flex-row flex-col gap-4'>
-    <Button className='outline' size='icon'>
-      <ShoppingCart className='w-6 h-6' />
-      <span className='sr-only'>User Cart</span>
-    </Button>
+    <Sheet open={openCartSheet} onOpenChange={()=>setOpenCartSheet(false)}>
+      <Button onClick={()=>setOpenCartSheet(true)} className='outline' size='icon'>
+        <ShoppingCart className='w-6 h-6' />
+        <span className='sr-only'>User Cart</span>
+      </Button>
+      <UserCartWrapper cartItems={cartItems &&  cartItems.items && cartItems.items.length > 0 ? cartItems.items : []}/>
+    </Sheet>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className='bg-black'>
@@ -83,7 +108,7 @@ export default function ShoppingHeader() {
           </SheetTrigger>
           <SheetContent side="left" className='w-full max-w-xs'>
             <MenuItems />
-            <HeaderRightContent/>
+            <HeaderRightContent />
           </SheetContent>
         </Sheet>
 
